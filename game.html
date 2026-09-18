@@ -1,0 +1,549 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Catch The Star</title>
+
+    <style>
+      body {
+        background-color: #111;
+        color: white;
+        font-family: Arial, sans-serif;
+        text-align: center;
+      }
+
+      h1 {
+        margin-top: 40px;
+      }
+
+      .info {
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+
+        margin-bottom: 20px;
+
+        font-size: 20px;
+      }
+
+      #score {
+        color: lightgreen;
+      }
+
+      #highScore {
+        color: gold;
+      }
+
+      /* GAME AREA */
+
+      #gameArea {
+        width: 700px;
+        height: 400px;
+
+        background-color: #222;
+
+        border: 3px solid lightgreen;
+
+        margin: auto;
+
+        position: relative;
+
+        overflow: hidden;
+      }
+
+      /* PLAYER */
+
+      #player {
+        width: 30px;
+        height: 30px;
+
+        background-color: lightgreen;
+
+        position: absolute;
+
+        top: 150px;
+        left: 100px;
+
+        box-shadow: 0 0 20px lightgreen;
+      }
+
+      /* STAR */
+
+      #star {
+        position: absolute;
+
+        top: 150px;
+        left: 400px;
+
+        font-size: 30px;
+      }
+
+      #speedText {
+        height: 30px;
+
+        margin-top: 15px;
+
+        color: gold;
+      }
+
+      .help {
+        color: gray;
+
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <h1>⭐ CATCH THE STAR</h1>
+
+
+    <!-- SCORE -->
+
+    <div class="info">
+
+      <div>
+        SCORE:
+        <span id="score">0</span>
+      </div>
+
+      <div>
+        HIGH SCORE:
+        <span id="highScore">0</span>
+      </div>
+
+      <div>
+        TIME:
+        <span id="timer">60</span>
+      </div>
+
+    </div>
+
+
+    <!-- GAME -->
+
+    <div id="gameArea">
+
+      <div id="player"></div>
+
+      <div id="star">⭐</div>
+
+    </div>
+
+
+    <div id="speedText"></div>
+
+
+    <div class="help">
+      Arrow Keys = Move | SPACE = Speed
+    </div>
+
+
+    <script>
+
+      // HTML element авах
+
+      const player =
+        document.getElementById("player");
+
+      const star =
+        document.getElementById("star");
+
+      const scoreText =
+        document.getElementById("score");
+
+      const highScoreText =
+        document.getElementById("highScore");
+
+      const timerText =
+        document.getElementById("timer");
+
+      const speedText =
+        document.getElementById("speedText");
+
+
+      // =========================
+      // VARIABLES
+      // =========================
+
+      let playerTop = 150;
+
+      let playerLeft = 100;
+
+      let direction = "right";
+
+      let score = 0;
+
+      let time = 60;
+
+
+      // =========================
+      // LOCAL STORAGE
+      // =========================
+
+      let highScore =
+        localStorage.getItem("highScore");
+
+
+      if (highScore == null) {
+
+        highScore = 0;
+
+      }
+
+
+      highScoreText.textContent =
+        highScore;
+
+
+      // =========================
+      // KEYBOARD
+      // =========================
+
+      document.addEventListener(
+        "keydown",
+        function (event) {
+
+          if (event.key === "ArrowUp") {
+
+            direction = "up";
+
+          }
+
+
+          if (event.key === "ArrowDown") {
+
+            direction = "down";
+
+          }
+
+
+          if (event.key === "ArrowLeft") {
+
+            direction = "left";
+
+          }
+
+
+          if (event.key === "ArrowRight") {
+
+            direction = "right";
+
+          }
+
+
+          // SPACE
+
+          if (event.key === " ") {
+
+            clearInterval(game);
+
+            game =
+              setInterval(
+                movePlayer,
+                50
+              );
+
+
+            speedText.textContent =
+              "⚡ SPEED!";
+
+          }
+
+        }
+      );
+
+
+      // =========================
+      // SPACE ТАВИХ
+      // =========================
+
+      document.addEventListener(
+        "keyup",
+        function (event) {
+
+          if (event.key === " ") {
+
+            clearInterval(game);
+
+
+            game =
+              setInterval(
+                movePlayer,
+                150
+              );
+
+
+            speedText.textContent =
+              "";
+
+          }
+
+        }
+      );
+
+
+      // =========================
+      // MOVE PLAYER
+      // =========================
+
+      function movePlayer() {
+
+        // UP
+
+        if (direction === "up") {
+
+          playerTop =
+            playerTop - 25;
+
+        }
+
+
+        // DOWN
+
+        if (direction === "down") {
+
+          playerTop =
+            playerTop + 25;
+
+        }
+
+
+        // LEFT
+
+        if (direction === "left") {
+
+          playerLeft =
+            playerLeft - 25;
+
+        }
+
+
+        // RIGHT
+
+        if (direction === "right") {
+
+          playerLeft =
+            playerLeft + 25;
+
+        }
+
+
+        // =====================
+        // WALL
+        // =====================
+
+
+        // Баруун талаас гарвал
+        // зүүн талаас гарна
+
+        if (playerLeft >= 700) {
+
+          playerLeft = 0;
+
+        }
+
+
+        // Зүүн талаас гарвал
+        // баруун талаас гарна
+
+        if (playerLeft < 0) {
+
+          playerLeft = 675;
+
+        }
+
+
+        // Доошоо гарвал
+        // дээрээс гарна
+
+        if (playerTop >= 400) {
+
+          playerTop = 0;
+
+        }
+
+
+        // Дээгүүр гарвал
+        // доороос гарна
+
+        if (playerTop < 0) {
+
+          playerTop = 375;
+
+        }
+
+
+        // Player хөдөлгөх
+
+        player.style.top =
+          playerTop + "px";
+
+
+        player.style.left =
+          playerLeft + "px";
+
+
+        // Star шалгах
+
+        checkStar();
+
+      }
+
+
+      // =========================
+      // CHECK STAR
+      // =========================
+
+      function checkStar() {
+
+        const playerRect =
+          player.getBoundingClientRect();
+
+
+        const starRect =
+          star.getBoundingClientRect();
+
+
+        const isTouching =
+
+          playerRect.left < starRect.right &&
+
+          playerRect.right > starRect.left &&
+
+          playerRect.top < starRect.bottom &&
+
+          playerRect.bottom > starRect.top;
+
+
+        // Хэрвээ star-д хүрвэл
+
+        if (isTouching) {
+
+          score =
+            score + 1;
+
+
+          scoreText.textContent =
+            score;
+
+
+          // HIGH SCORE
+
+          if (score > highScore) {
+
+            highScore =
+              score;
+
+
+            highScoreText.textContent =
+              highScore;
+
+
+            localStorage.setItem(
+              "highScore",
+              highScore
+            );
+
+          }
+
+
+          // Star шинэ газар
+
+          moveStar();
+
+        }
+
+      }
+
+
+      // =========================
+      // MOVE STAR
+      // =========================
+
+      function moveStar() {
+
+        const randomTop =
+          Math.random() * 350;
+
+
+        const randomLeft =
+          Math.random() * 650;
+
+
+        star.style.top =
+          randomTop + "px";
+
+
+        star.style.left =
+          randomLeft + "px";
+
+      }
+
+
+      // =========================
+      // GAME
+      // =========================
+
+      let game =
+        setInterval(
+          movePlayer,
+          150
+        );
+
+
+      // =========================
+      // TIMER
+      // =========================
+
+      let timer =
+        setInterval(
+          function () {
+
+            time =
+              time - 1;
+
+
+            timerText.textContent =
+              time;
+
+
+            // 10 секундээс
+            // бага бол улаан
+
+            if (time <= 10) {
+
+              timerText.style.color =
+                "red";
+
+            }
+
+
+            // TIME 0
+
+            if (time <= 0) {
+
+              clearInterval(game);
+
+              clearInterval(timer);
+
+
+              alert(
+                "TIME'S UP! Score: " +
+                score
+              );
+
+            }
+
+          },
+
+          1000
+        );
+
+    </script>
+
+  </body>
+</html>
